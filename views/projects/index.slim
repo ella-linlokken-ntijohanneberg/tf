@@ -3,4 +3,6 @@ h2 Your projects
 ol
   - @result.each do |project|
     li 
-      p #{project["name"]}
+      a href="projects/#{project['project_id']}"  #{project["name"]}
+      form action="projects/#{project['project_id']}/delete" method="post"
+        input type="submit" value="Delete"
