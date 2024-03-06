@@ -18,6 +18,10 @@ get('/projects') do
 end
 
 get('/projects/new') do
+  db = SQLite3::Database.new('db/handmade.db')
+  db.results_as_hash = true
+  @craft_type = db.execute("SELECT name FROM Craft_type")
+  p @craft_type
   slim(:"projects/new")
 end
 
@@ -42,5 +46,6 @@ get('/projects/:id') do
   db = SQLite3::Database.new('db/handmade.db')
   db.results_as_hash = true
   @result = db.execute("SELECT * FROM projects WHERE project_id = ?", id).first
+  p @result
   slim(:"projects/show")
 end
