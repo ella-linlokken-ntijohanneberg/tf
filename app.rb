@@ -20,17 +20,18 @@ end
 get('/projects/new') do
   db = SQLite3::Database.new('db/handmade.db')
   db.results_as_hash = true
-  @craft_type = db.execute("SELECT name FROM Craft_type")
+  @craft_type = db.execute("SELECT * FROM Craft_type")
   p @craft_type
   slim(:"projects/new")
 end
 
 post('/projects/new') do
   name = params[:project_name]
-  craft_id = params[:craft_id].to_i
+  craft_type = params[:craft_type]
   user_id = params[:user_id].to_i
   db = SQLite3::Database.new('db/handmade.db')
-  db.execute("INSERT INTO projects (name, craft_type_id, user_id) VALUES (?,?,?)", name, craft_id, user_id)
+  craft_type_id = db.execute("SELECT craft_type_id FROM Craft_type WHERE name = ?", craft_type).first
+  db.execute("INSERT INTO projects (name, user_id, craft_type_id) VALUES (?,?,?)", name, user_id, craft_type_id)
   redirect('/projects')
 end
 
