@@ -1,0 +1,8 @@
+form action="/projects/#{@result['project_id']}/update" method="post"
+    input type="text" name="project_name" value="#{@result['name']}"
+    input type="hidden" name="craft_id" value="#{@result['craft_type_id']}"
+    select name="attribute_1"
+        - @attributes.each do |attribute|
+            option value="#{attribute['name']}" #{attribute["name"]}
+    input type="text" name="description" placeholder="Add description"
+    input type="submit" value="Edit it!"

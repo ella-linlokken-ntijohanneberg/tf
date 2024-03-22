@@ -1,0 +1,7 @@
+form action="/projects/#{@result['project_id']}/addinfo" method="post"
+    input type="hidden" name="craft_id" value="#{@result['craft_type_id']}"
+    select name="attribute_1"
+        - @attributes.each do |attribute|
+            option value="#{attribute['name']}" #{attribute["name"]}
+    input type="text" name="description" placeholder="Add description"
+    input type="submit" value="Add info!"
