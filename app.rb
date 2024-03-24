@@ -21,7 +21,6 @@ get('/projects/new') do
   db = SQLite3::Database.new('db/handmade.db')
   db.results_as_hash = true
   @craft_type = db.execute("SELECT * FROM Craft_type")
-  p @craft_type
   slim(:"projects/new")
 end
 
@@ -39,6 +38,7 @@ post('/projects/:id/delete') do
   id = params[:id].to_i
   db = SQLite3::Database.new('db/handmade.db')
   db.execute("DELETE FROM projects WHERE project_id = ?", id)
+  db.execute("DELETE FROM project_attribute_rel WHERE project_id = ?", id)
   redirect('/projects')
 end
 
@@ -47,9 +47,12 @@ post('/projects/:id/addinfo') do
   name = params[:project_name]
   description = params[:description]
   attribute_1 = params[:attribute_1]
+  attribute_2 = params[:attribute_2]
   db = SQLite3::Database.new('db/handmade.db')
   attribute_1_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_1).first
-  db.execute("INSERT INTO project_attribute_rel (project_id, attribute_id) VALUES (?,?)", id, attribute_1_id)
+  db.execute("INSERT INTO project_attribute_rel (project_id, attribute_id, attribute_nbr) VALUES (?,?,?)", id, attribute_1_id, 1)
+  attribute_2_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_2).first
+  db.execute("INSERT INTO project_attribute_rel (project_id, attribute_id, attribute_nbr) VALUES (?,?,?)", id, attribute_2_id, 2)
   db.execute("UPDATE projects SET has_attribute = ?, description = ? WHERE project_id = ?", 1, description, id)
   redirect('/projects')
 end
@@ -59,10 +62,13 @@ post('/projects/:id/update') do
   name = params[:project_name]
   description = params[:description]
   attribute_1 = params[:attribute_1]
+  attribute_2 = params[:attribute_2]
   db = SQLite3::Database.new('db/handmade.db')
   attribute_1_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_1).first
+  attribute_2_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_2).first
   db.execute("UPDATE projects SET name = ?, description = ? WHERE project_id = ?", name, description, id)
   db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ?", attribute_1_id, id)
+  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ?", attribute_2_id, id)
   redirect('/projects')
 end
 
@@ -88,5 +94,10 @@ get('/projects/:id') do
   db = SQLite3::Database.new('db/handmade.db')
   db.results_as_hash = true
   @result = db.execute("SELECT * FROM projects WHERE project_id = ?", id).first
+  @craft_type = db.execute("SELECT name FROM craft_type WHERE craft_type_id = ?", @result['craft_type_id']).first
+  @attributes = db.execute("SELECT * FROM Project_attribute_rel
+                            INNER JOIN attributes ON Project_attribute_rel.attribute_id = attributes.attribute_id
+                            WHERE project_id = ?", @result['project_id'])
+  p @attributes
   slim(:"projects/show")
 end
