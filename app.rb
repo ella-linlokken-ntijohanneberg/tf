@@ -9,11 +9,58 @@ get('/') do
   slim(:start)
 end
 
+get('/register') do
+  slim(:register)
+end
+
+get('/login') do
+  slim(:login)
+end
+
+post('/login') do
+  username = params[:username]
+  password = params[:password]
+  db = SQLite3::Database.new('db/handmade.db')
+  db.results_as_hash = true
+  result = db.execute("SELECT * FROM users WHERE username = ?", username).first
+  pwdigest = result["pwdigest"]
+  id = result["id"]
+
+  if BCrypt::Password.new(pwdigest) == password
+    session[:id] = id
+    redirect('/')
+  else
+    "Wrong password"
+  end
+end
+
+post('/users/new') do
+  username = params[:username]
+  password = params[:password]
+  password_confirm = params[:password_confirm]
+
+  if password == password_confirm
+    password_digest = BCrypt::Password.create(password)
+    db = SQLite3::Database.new('db/handmade.db')
+    db.execute("INSERT INTO users (username, pwdigest) VALUES (?,?)", username, password_digest)
+    id = db.execute("SELECT id FROM users WHERE username = ?", username).first
+    session[:id] = id
+    redirect('/')
+  else
+    "No matching passwords"
+  end
+end
+
+get('/clear_session') do
+  session.clear
+  slim(:login)
+ end
+ 
+
 get('/projects') do
   db = SQLite3::Database.new('db/handmade.db')
   db.results_as_hash = true
-  @result = db.execute("SELECT * FROM projects")
-  p @result
+  @result = db.execute("SELECT * FROM projects WHERE user_id = ?", session[:id])
   slim(:"projects/index")
 end
 
@@ -67,8 +114,8 @@ post('/projects/:id/update') do
   attribute_1_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_1).first
   attribute_2_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_2).first
   db.execute("UPDATE projects SET name = ?, description = ? WHERE project_id = ?", name, description, id)
-  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ?", attribute_1_id, id)
-  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ?", attribute_2_id, id)
+  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ? AND attribute_nbr = ?", attribute_1_id, id, 1)
+  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ? AND attribute_nbr = ?", attribute_2_id, id, 2)
   redirect('/projects')
 end
 

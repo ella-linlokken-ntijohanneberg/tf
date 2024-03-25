@@ -6,7 +6,12 @@ html lang="en"
         title The Handmade Forum
     body
     h1 The Handmade Forum
-    nav 
-        a href="/projects" Projects
-        a href="/projects/new" Create new project 
+    nav
+        - if session[:id] != nil 
+            a href="/projects" Projects
+            a href="/projects/new" Create new project
+        - if session[:id] == nil
+            a href="/login" Log in
+        - else 
+            a href="/clear_session" Log out
     ==yield 
