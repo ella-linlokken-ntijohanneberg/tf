@@ -4,14 +4,25 @@ html lang="en"
         meta charset="UTF-8"/
         meta name="viewport" content="width=device-width, initial-scale=1.0"/
         title The Handmade Forum
+        link rel="stylesheet" href="/css/style1.css"/
     body
-    h1 The Handmade Forum
-    nav
-        - if session[:id] != nil 
-            a href="/projects" Projects
-            a href="/projects/new" Create new project
-        - if session[:id] == nil
-            a href="/login" Log in
-        - else 
-            a href="/clear_session" Log out
-    ==yield 
+        #grid_wrapper
+            header
+                h1
+                    a href="/" The Handmade Forum 
+            nav
+                ul#link_list
+                    - if session[:id] != nil 
+                        li 
+                            a href="/projects" Projects
+                        li
+                            a href="/projects/new" Create new project
+                    - if session[:id] == nil
+                        li 
+                            a href="/login" Log in
+                    - else
+                        li  
+                            a href="/clear_session" Log out
+            section#yield
+                ==yield 
+            == slim :footer

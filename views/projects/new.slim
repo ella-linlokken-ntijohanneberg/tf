@@ -3,5 +3,4 @@ form action="/projects/new" method="post"
     select name="craft_type"
         - @craft_type.each do |crafttype|
             option value="#{crafttype['name']}" #{crafttype["name"]}
-    input type="text" name="user_id" placeholder="You are user..."
     input type="submit" value="Create new project"

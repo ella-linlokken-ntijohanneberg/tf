@@ -1,9 +1,10 @@
-h2 Log in!
-
-form action="login" method="post"
-    input type="text" name="username" placeholder="Enter username"
-    input type="password" name="password" placeholder="Enter password"
-    input type="submit" value="Log in now!"
-
-h3 No account yet?
-a href="/register" Register here!
+section#login_page    
+    article#login
+        h2.section_header Log in!
+        form action="login" method="post"
+            input type="text" name="username" placeholder="Enter username"
+            input type="password" name="password" placeholder="Enter password"
+            input type="submit" value="Log in now!"
+    article#register
+        h2.section_header No account yet?
+        a href="/register" Register here!

@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Domine&family=Oxygen&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: rgb(255, 252, 248);
+}
+
+h1 a {
+    font-family: 'Domine', serif;
+    font-size: 2.6rem;
+    text-decoration: none;
+    color: black;
+}
+
+#grid_wrapper {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 100px 50px repeat(auto-fill, minmax(100px, 1fr) 25vh);
+    grid-template-areas: 
+        "he"
+        "na"
+        "yi"
+        "fo"
+        ;
+}
+
+header {
+    grid-area: he;
+    background: rgb(242, 239, 235);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: sticky;
+    top: 0px;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: absolute;
+    background-color: rgb(242, 239, 235);
+    grid-area: na;
+    position: sticky;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+    top: 100px;
+}
+
+#yield {
+    grid-area: yi;
+}
+
+#link_list {
+    background: rgba(224, 219, 213, 0.95);
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    list-style: none;
+}
+
+#link_list a {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-family: 'Domine', serif;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+}
+
+#section_1 {
+    height: 400px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: rgb(169, 176, 184);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section_header {
+    font-family: 'Domine', serif;
+    font-size: 2rem;
+}
+
+#front_text {
+    height: 50%;
+    width: 70%;
+    background: rgb(242, 239, 235);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.s1_text {
+    font-family: 'Domine', serif;
+    font-size: 3.5rem;
+    width: 80%;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+footer {
+    grid-area: fo;
+    background: rgb(242, 239, 235);
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgb(212, 208, 202);
+}
+
+#footer_info {
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+}
+
+footer a {
+    font-family: 'Oxygen', sans-serif;
+    text-decoration: none;
+    color: black;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+#social_media {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin: 5px;
+}
+
+#social_media_icons {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 60%;
+}
+
+.icons {
+    height: 85%;
+    width: auto;
+}
+
+.icons:hover {
+    background: rgb(212, 208, 202);
+    cursor: pointer;
+}
+
+.text_header {
+    margin: 5px;
+    font-family: 'Domine', serif;
+    font-size: 1.2rem;
+}
+
+#login_page {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: rgb(169, 176, 184);
+    height: 50vh;
+}
+
+#login {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 70%;
+    background: rgb(242, 239, 235);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+#login input[type=text], #login input[type=password] {
+    width: 90%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    margin-left: 5%;
+    display: inline-block;
+    font-size: 1rem;
+}

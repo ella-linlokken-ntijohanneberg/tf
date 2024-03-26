@@ -25,9 +25,11 @@ post('/login') do
   result = db.execute("SELECT * FROM users WHERE username = ?", username).first
   pwdigest = result["pwdigest"]
   id = result["id"]
+  name = result["username"]
 
   if BCrypt::Password.new(pwdigest) == password
     session[:id] = id
+    session[:name] = name
     redirect('/')
   else
     "Wrong password"
@@ -43,8 +45,9 @@ post('/users/new') do
     password_digest = BCrypt::Password.create(password)
     db = SQLite3::Database.new('db/handmade.db')
     db.execute("INSERT INTO users (username, pwdigest) VALUES (?,?)", username, password_digest)
-    id = db.execute("SELECT id FROM users WHERE username = ?", username).first
-    session[:id] = id
+    result = db.execute("SELECT * FROM users WHERE username = ?", username).first
+    session[:id] = result["id"]
+    session[:name] = result["username"]
     redirect('/')
   else
     "No matching passwords"
@@ -53,7 +56,7 @@ end
 
 get('/clear_session') do
   session.clear
-  slim(:login)
+  slim(:start)
  end
  
 
@@ -74,7 +77,7 @@ end
 post('/projects/new') do
   name = params[:project_name]
   craft_type = params[:craft_type]
-  user_id = params[:user_id].to_i
+  user_id = session[:id]
   db = SQLite3::Database.new('db/handmade.db')
   craft_type_id = db.execute("SELECT craft_type_id FROM Craft_type WHERE name = ?", craft_type).first
   db.execute("INSERT INTO projects (name, user_id, craft_type_id, has_attribute) VALUES (?,?,?,?)", name, user_id, craft_type_id, 0)

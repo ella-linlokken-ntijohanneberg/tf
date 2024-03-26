@@ -1,1 +1,7 @@
-h2 Handmade
+#section_1 
+    article#front_text
+        - if session[:name] == nil
+            p.s1_text THE BEST GIFTS ARE HANDMADE
+        - else 
+            p.s1_text WELCOME #{session[:name]}!
+    
