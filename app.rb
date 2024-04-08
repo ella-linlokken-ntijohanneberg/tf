@@ -3,7 +3,14 @@ require 'sinatra/reloader'
 require 'slim'
 require 'sqlite3'
 require 'bcrypt'
+require 'sinatra/flash'
 enable :sessions
+
+before do
+  if request.path_info != '/' && session[:id] == nil && request.path_info != '/login' && request.path_info != '/register'
+    redirect('/')
+  end
+end
 
 get('/') do
   slim(:start)
@@ -56,6 +63,7 @@ end
 
 get('/clear_session') do
   session.clear
+  flash[:logout] = "You have been logged out!"
   slim(:start)
  end
  
@@ -144,10 +152,20 @@ get('/projects/:id') do
   db = SQLite3::Database.new('db/handmade.db')
   db.results_as_hash = true
   @result = db.execute("SELECT * FROM projects WHERE project_id = ?", id).first
-  @craft_type = db.execute("SELECT name FROM craft_type WHERE craft_type_id = ?", @result['craft_type_id']).first
-  @attributes = db.execute("SELECT * FROM Project_attribute_rel
-                            INNER JOIN attributes ON Project_attribute_rel.attribute_id = attributes.attribute_id
-                            WHERE project_id = ?", @result['project_id'])
+  if @result['user_id'] == session[:id]
+    @craft_type = db.execute("SELECT name FROM craft_type WHERE craft_type_id = ?", @result['craft_type_id']).first
+    @attributes = db.execute("SELECT * FROM Project_attribute_rel
+                              INNER JOIN attributes ON Project_attribute_rel.attribute_id = attributes.attribute_id
+                              WHERE project_id = ?", @result['project_id'])
+  else
+    redirect('/projects')
+  end
   p @attributes
   slim(:"projects/show")
+end
+
+after do
+  if request.path_info == '/clear_session'
+    redirect('/')
+  end
 end

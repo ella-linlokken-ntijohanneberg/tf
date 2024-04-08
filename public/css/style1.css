@@ -66,13 +66,17 @@ nav {
     list-style: none;
 }
 
-#link_list a {
+#link_list a, #register_box a, #login_box a {
     text-decoration: none;
     color: rgb(0, 0, 0);
     font-weight: bold;
     font-family: 'Domine', serif;
     font-size: 1.25rem;
     text-transform: uppercase;
+}
+
+#link_list a:hover, #register_box a:hover, #login_box a:hover, .project a:hover {
+    color: rgb(104, 108, 113);
 }
 
 #section_1 {
@@ -159,37 +163,113 @@ footer a:hover {
     cursor: pointer;
 }
 
-.text_header {
+.text_header, .project a {
     margin: 5px;
     font-family: 'Domine', serif;
     font-size: 1.2rem;
 }
 
-#login_page {
+#login_page, #register_page {
     display: flex;
     justify-content: space-around;
     align-items: center;
     margin-bottom: 5px;
     margin-top: 5px;
     background-color: rgb(169, 176, 184);
-    height: 60vh;
+    height: 80vh;
 }
 
-#login {
+#register_page {
+    height: 95vh;
+}
+
+#login, #register_section {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
     height: 70%;
+    width: 40%;
     background: rgb(242, 239, 235);
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
-#login input[type=text], #login input[type=password] {
+#login input[type=text], #login input[type=password], #register_section input[type=text], #register_section input[type=password] {
     width: 90%;
     padding: 12px 20px;
     margin: 8px 0;
     margin-left: 5%;
     display: inline-block;
     font-size: 1rem;
+}
+
+#login input[type=submit], #register_section input[type=submit], .project input[type=submit] {
+    width: 90%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    margin-left: 5%;
+    font-size: 1rem;
+    background: rgb(250, 249, 248);
+}
+
+#login input[type=submit]:hover, #register_section input[type=submit]:hover, .project input[type=submit]:hover {
+    cursor: pointer;
+    background: rgb(242, 239, 235);
+}
+
+#register, #login_section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 60%;
+    width: 30%;
+}
+
+#login_section {
+    width: 32%;
+    height: 45%;
+}
+
+#register_box, #login_box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(242, 239, 235);
+    height: 30%;
+    width: 50%;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+#project_section {
+    background-color: rgb(169, 176, 184);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding: 3%;
+}
+
+.project {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 90px;
+    width: 60%;
+    margin: 10px;
+    background: rgb(242, 239, 235);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.project a {
+    color: black;
+    text-decoration: none;
+}
+
+.project input[type=submit] {
+    width: 100%;
+    margin: 0;
+    padding: 6px 20px;
 }

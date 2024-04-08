@@ -1,8 +1,7 @@
-h2 Your projects 
-
-ol
+section#project_section
+  h2.section_header Your projects 
   - @result.each do |project|
-    li 
+    article.project
       a href="projects/#{project['project_id']}"  #{project["name"]}
       a href="projects/#{project['project_id']}/edit" Add/change Project Information
       form action="projects/#{project['project_id']}/delete" method="post"

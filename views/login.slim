@@ -1,10 +1,11 @@
 section#login_page    
     article#login
-        h2.section_header Log in!
+        h2.section_header Sign in to your account!
         form action="login" method="post"
             input type="text" name="username" placeholder="Enter username"
             input type="password" name="password" placeholder="Enter password"
-            input type="submit" value="Log in now!"
+            input type="submit" value="Login"
     article#register
         h2.section_header No account yet?
-        a href="/register" Register here!
+        #register_box
+            a href="/register" Register here!

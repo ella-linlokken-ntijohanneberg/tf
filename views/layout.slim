@@ -24,5 +24,8 @@ html lang="en"
                         li  
                             a href="/clear_session" Log out
             section#yield
+                - if flash[:logout]
+                    p.notice = flash[:logout]
                 ==yield 
             == slim :footer
+        script src="js/script.js"
