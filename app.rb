@@ -4,6 +4,7 @@ require 'slim'
 require 'sqlite3'
 require 'bcrypt'
 require 'sinatra/flash'
+require_relative './model.rb'
 enable :sessions
 
 before do
@@ -27,37 +28,34 @@ end
 post('/login') do
   username = params[:username]
   password = params[:password]
-  db = SQLite3::Database.new('db/handmade.db')
-  db.results_as_hash = true
-  result = db.execute("SELECT * FROM users WHERE username = ?", username).first
-  pwdigest = result["pwdigest"]
-  id = result["id"]
-  name = result["username"]
-
-  if BCrypt::Password.new(pwdigest) == password
+  result = login_user(username, password)
+  if result == nil
+    flash[:wrong_pwd] = "Wrong password!"
+    redirect('/login')
+  else
+    id = result["id"]
+    name = result["username"]
     session[:id] = id
     session[:name] = name
     redirect('/')
-  else
-    "Wrong password"
   end
 end
 
-post('/users/new') do
+post('/register') do
   username = params[:username]
   password = params[:password]
   password_confirm = params[:password_confirm]
-
-  if password == password_confirm
-    password_digest = BCrypt::Password.create(password)
-    db = SQLite3::Database.new('db/handmade.db')
-    db.execute("INSERT INTO users (username, pwdigest) VALUES (?,?)", username, password_digest)
-    result = db.execute("SELECT * FROM users WHERE username = ?", username).first
+  if password == password_confirm && check_user(username) == false
+    result = register_user(username, password)
     session[:id] = result["id"]
     session[:name] = result["username"]
     redirect('/')
+  elsif check_user(username) == true
+    flash[:exists] = "Username is already taken!"
+    redirect('/register')
   else
-    "No matching passwords"
+    flash[:mismatch] = "No matching passwords!"
+    redirect('/register')
   end
 end
 
@@ -69,16 +67,13 @@ get('/clear_session') do
  
 
 get('/projects') do
-  db = SQLite3::Database.new('db/handmade.db')
-  db.results_as_hash = true
-  @result = db.execute("SELECT * FROM projects WHERE user_id = ?", session[:id])
+  @result = select_user_projects()
   slim(:"projects/index")
 end
 
 get('/projects/new') do
-  db = SQLite3::Database.new('db/handmade.db')
-  db.results_as_hash = true
-  @craft_type = db.execute("SELECT * FROM Craft_type")
+  db = connect_to_db('db/handmade.db')
+  @craft_type = select_all_crafts()
   slim(:"projects/new")
 end
 
@@ -86,32 +81,22 @@ post('/projects/new') do
   name = params[:project_name]
   craft_type = params[:craft_type]
   user_id = session[:id]
-  db = SQLite3::Database.new('db/handmade.db')
-  craft_type_id = db.execute("SELECT craft_type_id FROM Craft_type WHERE name = ?", craft_type).first
-  db.execute("INSERT INTO projects (name, user_id, craft_type_id, has_attribute) VALUES (?,?,?,?)", name, user_id, craft_type_id, 0)
+  new_project(name, craft_type, user_id)
   redirect('/projects')
 end
 
 post('/projects/:id/delete') do
   id = params[:id].to_i
-  db = SQLite3::Database.new('db/handmade.db')
-  db.execute("DELETE FROM projects WHERE project_id = ?", id)
-  db.execute("DELETE FROM project_attribute_rel WHERE project_id = ?", id)
+  delete_project(id)
   redirect('/projects')
 end
 
 post('/projects/:id/addinfo') do
   id = params[:id].to_i
-  name = params[:project_name]
   description = params[:description]
   attribute_1 = params[:attribute_1]
   attribute_2 = params[:attribute_2]
-  db = SQLite3::Database.new('db/handmade.db')
-  attribute_1_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_1).first
-  db.execute("INSERT INTO project_attribute_rel (project_id, attribute_id, attribute_nbr) VALUES (?,?,?)", id, attribute_1_id, 1)
-  attribute_2_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_2).first
-  db.execute("INSERT INTO project_attribute_rel (project_id, attribute_id, attribute_nbr) VALUES (?,?,?)", id, attribute_2_id, 2)
-  db.execute("UPDATE projects SET has_attribute = ?, description = ? WHERE project_id = ?", 1, description, id)
+  add_project_info(id, attribute_1, attribute_2, description)
   redirect('/projects')
 end
 
@@ -121,25 +106,15 @@ post('/projects/:id/update') do
   description = params[:description]
   attribute_1 = params[:attribute_1]
   attribute_2 = params[:attribute_2]
-  db = SQLite3::Database.new('db/handmade.db')
-  attribute_1_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_1).first
-  attribute_2_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", attribute_2).first
-  db.execute("UPDATE projects SET name = ?, description = ? WHERE project_id = ?", name, description, id)
-  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ? AND attribute_nbr = ?", attribute_1_id, id, 1)
-  db.execute("UPDATE project_attribute_rel SET attribute_id = ? WHERE project_id = ? AND attribute_nbr = ?", attribute_2_id, id, 2)
+  update_project_info(id, name, attribute_1, attribute_2, description)
   redirect('/projects')
 end
 
 get('/projects/:id/edit') do
   id = params[:id].to_i
-  db = SQLite3::Database.new('db/handmade.db')
-  db.results_as_hash = true
-  @result = db.execute("SELECT * FROM projects WHERE project_id = ?", id).first
-  craft_type_id = @result['craft_type_id']
-  @attributes = db.execute("SELECT * FROM Craft_attribute_rel 
-                            INNER JOIN Attributes ON Craft_attribute_rel.attribute_id = Attributes.attribute_id
-                            WHERE craft_id = ?", craft_type_id)
-  p @attributes
+  craft_type_id = select_project_craft_id(id)
+  @attributes = select_project_attributes_craft(craft_type_id)
+  @result = select_one_project(id)
   if @result['has_attribute'].to_i == 0
     slim(:"/projects/addinfo")
   else
@@ -149,17 +124,16 @@ end
 
 get('/projects/:id') do
   id = params[:id].to_i
-  db = SQLite3::Database.new('db/handmade.db')
-  db.results_as_hash = true
-  @result = db.execute("SELECT * FROM projects WHERE project_id = ?", id).first
+  @result = select_one_project(id)
+  craft_type_id = @result['craft_type_id']
   if @result['user_id'] == session[:id]
-    @craft_type = db.execute("SELECT name FROM craft_type WHERE craft_type_id = ?", @result['craft_type_id']).first
-    @attributes = db.execute("SELECT * FROM Project_attribute_rel
-                              INNER JOIN attributes ON Project_attribute_rel.attribute_id = attributes.attribute_id
-                              WHERE project_id = ?", @result['project_id'])
+    @craft_type = select_project_craft(craft_type_id)
+    @attributes = select_project_attributes_project(id)
   else
     redirect('/projects')
   end
+  p @result
+  p @craft_type
   p @attributes
   slim(:"projects/show")
 end

@@ -26,6 +26,12 @@ html lang="en"
             section#yield
                 - if flash[:logout]
                     p.notice = flash[:logout]
+                - if flash[:wrong_pwd]
+                    p.notice = flash[:wrong_pwd]
+                - if flash[:mismatch]
+                    p.notice = flash[:mismatch]
+                - if flash[:exists]
+                    p.notice = flash[:exists]
                 ==yield 
             == slim :footer
         script src="js/script.js"
