@@ -16,13 +16,17 @@ def connect_to_db_no_hash(path)
 end
 
 def login_user(username, password)
-    db = connect_to_db('db/handmade.db')
-    result = db.execute("SELECT * FROM users WHERE username = ?", username).first
-    pwdigest = result["pwdigest"]
-    if BCrypt::Password.new(pwdigest) == password
-        return result
+    if check_user(username) == true
+        db = connect_to_db('db/handmade.db')
+        result = db.execute("SELECT * FROM users WHERE username = ?", username).first
+        pwdigest = result["pwdigest"]
+        if BCrypt::Password.new(pwdigest) == password
+            return result
+        else
+            return nil
+        end
     else
-        return nil
+        return false
     end
 end
 
@@ -39,14 +43,20 @@ end
 def register_user(username, password)
     password_digest = BCrypt::Password.create(password)
     db = connect_to_db('db/handmade.db')
-    db.execute("INSERT INTO users (username, pwdigest) VALUES (?,?)", username, password_digest)
+    db.execute("INSERT INTO users (username, pwdigest, is_admin, has_project) VALUES (?,?,?,?)", username, password_digest, 0, 0)
     result = db.execute("SELECT * FROM users WHERE username = ?", username).first
     return result
 end
 
-def select_user_projects()
+def select_users()
     db = connect_to_db('db/handmade.db')
-    result = db.execute("SELECT * FROM projects WHERE user_id = ?", session[:id])
+    result = db.execute("SELECT * FROM users WHERE id != ?", session[:id])
+    return result
+end
+
+def select_user_projects(id)
+    db = connect_to_db('db/handmade.db')
+    result = db.execute("SELECT * FROM projects WHERE user_id = ?", id)
     return result
 end
 
@@ -66,12 +76,28 @@ def new_project(name, craft_type, user_id)
     db = connect_to_db_no_hash('db/handmade.db')
     craft_type_id = db.execute("SELECT craft_type_id FROM Craft_type WHERE name = ?", craft_type).first
     db.execute("INSERT INTO projects (name, user_id, craft_type_id, has_attribute) VALUES (?,?,?,?)", name, user_id, craft_type_id, 0)
+    db.execute("UPDATE users SET has_project = ? WHERE id = ?", 1, user_id)
 end
 
 def delete_project(id)
     db = connect_to_db('db/handmade.db')
     db.execute("DELETE FROM projects WHERE project_id = ?", id)
     db.execute("DELETE FROM project_attribute_rel WHERE project_id = ?", id)
+end
+
+def give_admin_status(id, admin_pin)
+    db = connect_to_db_no_hash('db/handmade.db')
+    db.execute("UPDATE users SET is_admin = ? WHERE id = ?", admin_pin, id)
+end
+
+def delete_user(id)
+    db = connect_to_db('db/handmade.db')
+    projects = db.execute("SELECT * FROM projects WHERE user_id = ?", id)
+    projects.each do |project|
+        db.execute("DELETE FROM project_attribute_rel WHERE project_id = ?", project['project_id'])
+    end
+    db.execute("DELETE FROM projects WHERE user_id = ?", id)
+    db.execute("DELETE FROM users WHERE id = ?", id)
 end
 
 def add_project_attribute_rel(id, attribute, attribute_nbr)

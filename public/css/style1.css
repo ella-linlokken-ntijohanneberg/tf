@@ -66,7 +66,7 @@ nav {
     list-style: none;
 }
 
-#link_list a, #register_box a, #login_box a {
+#link_list a, #register_box a, #login_box a, #new_project_box a {
     text-decoration: none;
     color: rgb(0, 0, 0);
     font-weight: bold;
@@ -75,11 +75,11 @@ nav {
     text-transform: uppercase;
 }
 
-#link_list a:hover, #register_box a:hover, #login_box a:hover, .project a:hover {
+#link_list a:hover, #register_box a:hover, #login_box a:hover, .project a:hover, #new_project_box a:hover {
     color: rgb(104, 108, 113);
 }
 
-#section_1 {
+#section_1, #admin_start {
     height: 400px;
     margin-bottom: 5px;
     margin-top: 5px;
@@ -87,6 +87,10 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#admin_start {
+    background: rgb(36, 46, 50);
 }
 
 .section_header {
@@ -128,7 +132,7 @@ footer {
     height: 100%;
 }
 
-footer a, #project_info ol, #project_info p, .notice {
+footer a, #project_info ol, #project_info p, .notice, #user_info ol {
     font-family: 'Oxygen', sans-serif;
     text-decoration: none;
     color: black;
@@ -163,13 +167,13 @@ footer a:hover {
     cursor: pointer;
 }
 
-.text_header, .project a, .form_label {
+.text_header, .project a, .form_label, .user p {
     margin: 5px;
     font-family: 'Domine', serif;
     font-size: 1.2rem;
 }
 
-#login_page, #register_page {
+#login_page, #register_page, #admin_login_page {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -177,6 +181,10 @@ footer a:hover {
     margin-top: 5px;
     background-color: rgb(169, 176, 184);
     height: 80vh;
+}
+
+#admin_login_page {
+    background: rgb(120, 155, 157);
 }
 
 #register_page {
@@ -231,7 +239,7 @@ footer a:hover {
     height: 45%;
 }
 
-#register_box, #login_box {
+#register_box, #login_box, #new_project_box {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -241,7 +249,12 @@ footer a:hover {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
-#project_section, #show_project, #edit_project, #add_info, #new_project {
+#new_project_box {
+    height: 80px;
+    margin: 10px;
+}
+
+#project_section, #show_project, #edit_project, #add_info, #new_project, #user_section, #show_user {
     background-color: rgb(169, 176, 184);
     display: flex;
     flex-direction: column;
@@ -252,7 +265,7 @@ footer a:hover {
     padding: 3%;
 }
 
-.project {
+.project, .user {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -263,7 +276,7 @@ footer a:hover {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
-#project_info, #edit_form, #add_form, #new_form {
+#project_info, #edit_form, #add_form, #new_form, #admin_login, #user_info {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -277,11 +290,15 @@ footer a:hover {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
+#admin_login {
+    width: 40%;
+}
+
 #project_info * {
     margin: 10px;
 }
 
-#project_info ol {
+#project_info ol, #user_info ol {
     list-style: none;
     height: 20%;
     display: flex;
@@ -289,18 +306,24 @@ footer a:hover {
     justify-content: space-around;
 }
 
-.project a {
+.project a, .user a {
     color: black;
     text-decoration: none;
 }
 
-.project input[type=submit] {
+.project input[type=submit], .user input[type=submit], .user input[type=text] {
     width: 100%;
     margin: 0;
     padding: 6px 20px;
 }
 
-#edit_form form, #add_info form, #new_form form {
+.user form {
+    display: flex;
+    justify-content: space-around;
+    width: 35%;
+}
+
+#edit_form form, #add_info form, #new_form form, #admin_login form {
     display: flex;
     flex-direction: column;
     justify-content: space-around;

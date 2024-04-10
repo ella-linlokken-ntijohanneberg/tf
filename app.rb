@@ -8,9 +8,13 @@ require_relative './model.rb'
 enable :sessions
 
 before do
-  if request.path_info != '/' && session[:id] == nil && request.path_info != '/login' && request.path_info != '/register'
-    flash[:not_logged_in] = "You need to sign in first!"
+  if request.path_info != '/' && session[:id] == nil && request.path_info != '/login' && request.path_info != '/register' && request.path_info != '/admin/login'
+    flash[:message] = "You need to sign in first!"
     redirect('/login')
+  end
+  if session[:admin] == 0 && request.path_info == '/admin' && request.path_info == '/admin/users'
+    flash[:message] = "You don't have authorization to view this page!"
+    redirect('/')
   end
 end
 
@@ -18,12 +22,44 @@ get('/') do
   slim(:start)
 end
 
+get('/admin') do
+  slim(:"admin/start")
+end
+
 get('/register') do
-  slim(:register)
+  slim(:"user/register")
+end
+
+get('/admin/login') do
+  slim(:"admin/login")
+end
+
+post('/admin/login') do
+  username = params[:username]
+  password = params[:password]
+  admin_pin = params[:admin_pin].to_i
+  result = login_user(username, password)
+  if result == nil
+    flash[:message] = "Wrong password!"
+    redirect('/admin/login')
+  elsif result == false
+    flash[:message] = "Wrong username!"
+    redirect('/admin/login')
+  else
+    if admin_pin == result["is_admin"] && admin_pin != 0
+      session[:id] = result["id"]
+      session[:name] = result["username"]
+      session[:admin] = result["is_admin"]
+      redirect('/admin')
+    else
+      flash[:message] = "That is not an Admin Pincode!"
+      redirect('/admin/login')
+    end
+  end
 end
 
 get('/login') do
-  slim(:login)
+  slim(:"user/login")
 end
 
 post('/login') do
@@ -31,13 +67,15 @@ post('/login') do
   password = params[:password]
   result = login_user(username, password)
   if result == nil
-    flash[:wrong_pwd] = "Wrong password!"
+    flash[:message] = "Wrong password!"
+    redirect('/login')
+  elsif result == false
+    flash[:message] = "Wrong username!"
     redirect('/login')
   else
-    id = result["id"]
-    name = result["username"]
-    session[:id] = id
-    session[:name] = name
+    session[:id] = result["id"]
+    session[:name] = result["username"]
+    session[:admin] = result["is_admin"]
     redirect('/')
   end
 end
@@ -46,29 +84,41 @@ post('/register') do
   username = params[:username]
   password = params[:password]
   password_confirm = params[:password_confirm]
-  if password == password_confirm && check_user(username) == false
+  if password == password_confirm && check_user(username) == false && password.length > 0 && username.length > 0
     result = register_user(username, password)
     session[:id] = result["id"]
     session[:name] = result["username"]
+    session[:admin] = result["is_admin"]
     redirect('/')
   elsif check_user(username) == true
-    flash[:exists] = "Username is already taken!"
+    flash[:message] = "Username is already taken!"
+    redirect('/register')
+  elsif password.length < 1
+    flash[:message] = "Password must contain at least 1 character"
+    redirect('/register')
+  elsif username.length < 1
+    flash[:message] = "Username must contain at least 1 character"
     redirect('/register')
   else
-    flash[:mismatch] = "No matching passwords!"
+    flash[:message] = "No matching passwords!"
     redirect('/register')
   end
 end
 
 get('/clear_session') do
   session.clear
-  flash[:logout] = "You have been logged out!"
+  flash[:message] = "You have been logged out!"
   slim(:start)
  end
  
+get('/admin/users') do
+  @result = select_users()
+  slim(:"admin/user_index")
+end
 
 get('/projects') do
-  @result = select_user_projects()
+  id = session[:id]
+  @result = select_user_projects(id)
   slim(:"projects/index")
 end
 
@@ -92,6 +142,12 @@ post('/projects/:id/delete') do
   redirect('/projects')
 end
 
+post('/admin/users/:id/delete') do
+  id = params[:id].to_i
+  delete_user(id)
+  redirect('/admin/users')
+end
+
 post('/projects/:id/addinfo') do
   id = params[:id].to_i
   description = params[:description]
@@ -109,6 +165,13 @@ post('/projects/:id/update') do
   attribute_2 = params[:attribute_2]
   update_project_info(id, name, attribute_1, attribute_2, description)
   redirect('/projects')
+end
+
+post('/admin/users/:id/update') do
+  id = params[:id].to_i
+  admin_pin = params[:admin_pin]
+  give_admin_status(id, admin_pin)
+  redirect('/admin/users')
 end
 
 get('/projects/:id/edit') do
@@ -131,7 +194,7 @@ get('/projects/:id') do
     @craft_type = select_project_craft(craft_type_id)
     @attributes = select_project_attributes_project(id)
   else
-    flash[:not_user_project] = "Not your project, who do you think you are?!"
+    flash[:message] = "Not your project, who do you think you are?!"
     redirect('/projects')
   end
   slim(:"projects/show")

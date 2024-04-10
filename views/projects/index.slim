@@ -1,11 +1,16 @@
 section#project_section
-  h2.section_header Your projects 
-  - @result.each do |project|
-    article.project
-      a href="projects/#{project['project_id']}"  #{project["name"]}
-      - if project["has_attribute"] == 0
-        a href="projects/#{project['project_id']}/edit" Add Project Information
-      - else
-        a href="projects/#{project['project_id']}/edit" Change Project Information
-      form action="projects/#{project['project_id']}/delete" method="post"
-        input type="submit" value="Delete"
+  - if @result.empty?
+    h2.section_header You don't have any projects
+    #new_project_box
+      a href="/projects/new" Create New Project
+  - else
+    h2.section_header Your projects 
+    - @result.each do |project|
+      article.project
+        a href="projects/#{project['project_id']}"  #{project["name"]}
+        - if project["has_attribute"] == 0
+          a href="projects/#{project['project_id']}/edit" Add Project Information
+        - else
+          a href="projects/#{project['project_id']}/edit" Change Project Information
+        form action="projects/#{project['project_id']}/delete" method="post"
+          input type="submit" value="Delete"

@@ -8,8 +8,12 @@ html lang="en"
     body
         #grid_wrapper
             header
-                h1
-                    a href="/" The Handmade Forum 
+                - if session[:admin] != 0 && session[:id] != nil 
+                    h1
+                        a href="/admin" The Handmade Forum 
+                - else 
+                    h1 
+                        a href="/" The Handmade Forum
             nav
                 ul#link_list
                     - if session[:id] != nil 
@@ -17,6 +21,9 @@ html lang="en"
                             a href="/projects" Projects
                         li
                             a href="/projects/new" Create new project
+                    - if session[:admin] != 0 && session[:id] != nil
+                        li  
+                            a href="/admin/users" View users 
                     - if session[:id] == nil
                         li 
                             a href="/login" Log in
@@ -24,18 +31,8 @@ html lang="en"
                         li  
                             a href="/clear_session" Log out
             section#yield
-                - if flash[:logout]
-                    p.notice = flash[:logout]
-                - if flash[:wrong_pwd]
-                    p.notice = flash[:wrong_pwd]
-                - if flash[:mismatch]
-                    p.notice = flash[:mismatch]
-                - if flash[:exists]
-                    p.notice = flash[:exists]
-                - if flash[:not_logged_in]
-                    p.notice = flash[:not_logged_in]
-                - if flash[:not_user_project]
-                    p.notice = flash[:not_user_project]
+                - if flash[:message]
+                    p.notice = flash[:message]
                 ==yield 
             == slim :footer
-        script src="js/script.js"
+        script src="/js/script.js"

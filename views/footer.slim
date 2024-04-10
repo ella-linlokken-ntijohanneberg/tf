@@ -4,6 +4,8 @@ footer
         a href="#" Terms and Conditions  
         a href="#" Integrity
         a href="#" Cookies
+        - if request.path_info == '/login'
+            a href="/admin/login" Are you Way Out There? 
     section#social_media 
         h3.text_header Find Us Here
         article#social_media_icons 

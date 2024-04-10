@@ -1,0 +1,9 @@
+section#admin_login_page    
+    article#admin_login
+        h2.section_header Sign in as administrator!
+        form action="/admin/login" method="post"
+            input.form_text type="text" name="username" placeholder="Enter username"
+            input.form_text type="password" name="password" placeholder="Enter password"
+            label.form_label for="admin_pin" Enter your Admin Pincode 
+            input.form_text type="password" name="admin_pin" maxlength="6" placeholder="Enter Admin Pincode"
+            input.form_submit type="submit" value="Login"
