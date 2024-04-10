@@ -3,6 +3,9 @@ section#project_section
   - @result.each do |project|
     article.project
       a href="projects/#{project['project_id']}"  #{project["name"]}
-      a href="projects/#{project['project_id']}/edit" Add/change Project Information
+      - if project["has_attribute"] == 0
+        a href="projects/#{project['project_id']}/edit" Add Project Information
+      - else
+        a href="projects/#{project['project_id']}/edit" Change Project Information
       form action="projects/#{project['project_id']}/delete" method="post"
-        input type="submit" value="Delete"  
+        input type="submit" value="Delete"

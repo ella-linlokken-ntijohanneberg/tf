@@ -1,6 +1,10 @@
-form action="/projects/new" method="post"
-    input type="text" name="project_name" placeholder="Project Name"
-    select name="craft_type"
-        - @craft_type.each do |crafttype|
-            option value="#{crafttype['name']}" #{crafttype["name"]}
-    input type="submit" value="Create new project"
+section#new_project
+    article#new_form    
+        form action="/projects/new" method="post"
+            label for="project_name" class="form_label" Choose Project Name 
+            input.form_text type="text" name="project_name" placeholder="Project Name"
+            label for="craft_type" class="form_label" Choose Craft Type 
+            select.form_text name="craft_type"
+                - @craft_type.each do |crafttype|
+                    option.form_text value="#{crafttype['name']}" #{crafttype["name"]}
+            input.form_submit type="submit" value="Create new project"

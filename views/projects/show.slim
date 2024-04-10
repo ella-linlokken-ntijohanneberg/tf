@@ -1,8 +1,10 @@
-h2 =  @result["name"]
-h3 Craft Type: #{@craft_type["name"]}
-h3 Project Attributes: 
-ol 
-   - @attributes.each do |attribute|
-     li #{attribute["name"]}
-h3 Description 
-p #{@result["description"]}
+section#show_project
+  article#project_info 
+    h2.section_header =  @result["name"]
+    h3.text_header Craft Type: #{@craft_type["name"]}
+    h3.text_header Project Attributes: 
+    ol 
+      - @attributes.each do |attribute|
+        li #{attribute["name"]}
+    h3.text_header Description 
+    p #{@result["description"]}

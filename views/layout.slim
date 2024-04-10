@@ -32,6 +32,10 @@ html lang="en"
                     p.notice = flash[:mismatch]
                 - if flash[:exists]
                     p.notice = flash[:exists]
+                - if flash[:not_logged_in]
+                    p.notice = flash[:not_logged_in]
+                - if flash[:not_user_project]
+                    p.notice = flash[:not_user_project]
                 ==yield 
             == slim :footer
         script src="js/script.js"

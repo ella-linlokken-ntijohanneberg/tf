@@ -9,7 +9,8 @@ enable :sessions
 
 before do
   if request.path_info != '/' && session[:id] == nil && request.path_info != '/login' && request.path_info != '/register'
-    redirect('/')
+    flash[:not_logged_in] = "You need to sign in first!"
+    redirect('/login')
   end
 end
 
@@ -130,11 +131,9 @@ get('/projects/:id') do
     @craft_type = select_project_craft(craft_type_id)
     @attributes = select_project_attributes_project(id)
   else
+    flash[:not_user_project] = "Not your project, who do you think you are?!"
     redirect('/projects')
   end
-  p @result
-  p @craft_type
-  p @attributes
   slim(:"projects/show")
 end
 

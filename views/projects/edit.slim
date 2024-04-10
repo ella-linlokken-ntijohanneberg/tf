@@ -1,11 +1,16 @@
-form action="/projects/#{@result['project_id']}/update" method="post"
-    input type="text" name="project_name" value="#{@result['name']}"
-    input type="hidden" name="craft_id" value="#{@result['craft_type_id']}"
-    select name="attribute_1"
-        - @attributes.each do |attribute|
-            option value="#{attribute['name']}" #{attribute["name"]}
-    select name="attribute_2"
-        - @attributes.each do |attribute|
-            option value="#{attribute['name']}" #{attribute["name"]}
-    input type="text" name="description" placeholder="Change description"
-    input type="submit" value="Edit it!"
+section#edit_project   
+    article#edit_form
+        form action="/projects/#{@result['project_id']}/update" method="post"
+            label for="project_name" class="form_label" Change Project Name 
+            input.form_text type="text" name="project_name" value="#{@result['name']}" 
+            input type="hidden" name="craft_id" value="#{@result['craft_type_id']}"
+            label for="attribute" class="form_label" Choose New Attributes 
+            select.form_text name="attribute_1"
+                - @attributes.each do |attribute|
+                    option.form_text value="#{attribute['name']}" #{attribute["name"]}
+            select.form_text name="attribute_2"
+                - @attributes.each do |attribute|
+                    option.form_text value="#{attribute['name']}" #{attribute["name"]}
+            label for="description" class="form_label" Change Description 
+            input#description type="text" name="description" value="#{@result['description']}"
+            input.form_submit type="submit" value="Edit it!"
