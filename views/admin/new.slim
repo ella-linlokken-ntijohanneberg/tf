@@ -1,0 +1,15 @@
+section#new_craft_attribute
+    article.new_form
+        form action="/admin/craft_type/new" method="post"
+            label for="craft_name" class="form_label" Choose Craft Type Name 
+            input.form_text type="text" name="craft_name" placeholder="Craft Type Name"
+            input.form_submit type="submit" value="Create new craft type"
+    article.new_form
+        form action="/admin/attribute/new" method="post"
+            label for="attribute_name" class="form_label" Choose Attribute Name 
+            input.form_text type="text" name="attribute_name" placeholder="Attribute Name"
+            label for="craft_type" class="form_label" Choose Craft Type 
+            select.form_text name="craft_type"
+                - @craft_type.each do |crafttype|
+                    option.form_text value="#{crafttype['name']}" #{crafttype["name"]}
+            input.form_submit type="submit" value="Create new attribute"

@@ -254,7 +254,7 @@ footer a:hover {
     margin: 10px;
 }
 
-#project_section, #show_project, #edit_project, #add_info, #new_project, #user_section, #show_user {
+#project_section, #show_project, #edit_project, #add_info, #new_project, #user_section, #show_user, #new_craft_attribute {
     background-color: rgb(169, 176, 184);
     display: flex;
     flex-direction: column;
@@ -263,6 +263,10 @@ footer a:hover {
     margin-bottom: 5px;
     margin-top: 5px;
     padding: 3%;
+}
+
+#new_craft_attribute {
+    background: rgb(36, 46, 50);
 }
 
 .project, .user {
@@ -276,7 +280,7 @@ footer a:hover {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
-#project_info, #edit_form, #add_form, #new_form, #admin_login, #user_info {
+#project_info, #edit_form, #add_form, .new_form, #admin_login, #user_info {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -290,8 +294,16 @@ footer a:hover {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5), 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
+#new_craft_attribute .new_form {
+    width: 40%;
+}
+
 #admin_login {
     width: 40%;
+}
+
+#user_section {
+    background: rgb(120, 155, 157);
 }
 
 #project_info * {
@@ -323,7 +335,7 @@ footer a:hover {
     width: 35%;
 }
 
-#edit_form form, #add_info form, #new_form form, #admin_login form {
+#edit_form form, #add_info form, .new_form form, #admin_login form {
     display: flex;
     flex-direction: column;
     justify-content: space-around;

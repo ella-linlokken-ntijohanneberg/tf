@@ -79,6 +79,53 @@ def new_project(name, craft_type, user_id)
     db.execute("UPDATE users SET has_project = ? WHERE id = ?", 1, user_id)
 end
 
+def new_craft_type(name)
+    craft_types = []
+    db = connect_to_db_no_hash('db/handmade.db')
+    select_all_crafts().each do |craft_type|
+        craft_types << craft_type['name']
+    end
+    if craft_types.include?(name.downcase)
+        return nil
+    else
+        db.execute("INSERT INTO craft_type (name) VALUES (?)", name.downcase)
+    end
+end
+
+def new_attribute(name, craft_type)
+    attribute_exists = 0
+    list_of_attributes = []
+    db = connect_to_db('db/handmade.db')
+    select_craft = db.execute("SELECT craft_type_id FROM craft_type WHERE name = ?", craft_type).first
+    craft_type_id = select_craft['craft_type_id']
+    attributes = db.execute("SELECT * FROM attributes")
+    attributes.each do |attribute|
+        list_of_attributes << attribute['name']
+    end
+    if list_of_attributes.include?(name.downcase)
+        list_of_craft_ids = []
+        attributes = db.execute("SELECT * FROM attributes
+                    INNER JOIN craft_attribute_rel ON attributes.attribute_id = craft_attribute_rel.attribute_id
+                    WHERE name = ?", name)
+        attributes.each do |attribute|
+            list_of_craft_ids << attribute['craft_id']
+        end
+        if list_of_craft_ids.include?(craft_type_id)
+            attribute_exists = 1
+        end
+    end
+    if attribute_exists == 0
+        db = connect_to_db_no_hash('db/handmade.db')
+        if list_of_attributes.include?(name.downcase) == false
+            db.execute("INSERT INTO attributes (name) VALUES (?)", name.downcase)
+        end
+        attribute_id = db.execute("SELECT attribute_id FROM attributes WHERE name = ?", name.downcase)
+        db.execute("INSERT INTO craft_attribute_rel (craft_id, attribute_id) VALUES (?,?)", craft_type_id, attribute_id)
+    else
+        return nil
+    end
+end
+
 def delete_project(id)
     db = connect_to_db('db/handmade.db')
     db.execute("DELETE FROM projects WHERE project_id = ?", id)

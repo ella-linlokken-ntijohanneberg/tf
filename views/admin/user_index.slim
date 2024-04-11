@@ -3,6 +3,7 @@ section#user_section
     - @result.each do |user|
         article.user 
             p = user["username"]
+            p = user["is_admin"]
             form action="users/#{user['id']}/update" method="post" 
                 input type="text" name="admin_pin" maxlength="6" placeholder="Create Admin Pin for #{user['username']}"
                 input type="submit" value="Submit Pin"

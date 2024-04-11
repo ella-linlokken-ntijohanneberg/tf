@@ -12,7 +12,7 @@ before do
     flash[:message] = "You need to sign in first!"
     redirect('/login')
   end
-  if session[:admin] == 0 && request.path_info == '/admin' && request.path_info == '/admin/users'
+  if session[:admin] == 0 && request.path_info == '/admin' || session[:admin] == 0 && request.path_info == '/admin/users' || session[:admin] == 0 && request.path_info == '/admin/craft_attribute/new'
     flash[:message] = "You don't have authorization to view this page!"
     redirect('/')
   end
@@ -76,6 +76,9 @@ post('/login') do
     session[:id] = result["id"]
     session[:name] = result["username"]
     session[:admin] = result["is_admin"]
+    if session[:admin] != 0
+      flash[:message] = "You can log in as admin with pincode #{session[:admin]}!"
+    end
     redirect('/')
   end
 end
@@ -123,7 +126,6 @@ get('/projects') do
 end
 
 get('/projects/new') do
-  db = connect_to_db('db/handmade.db')
   @craft_type = select_all_crafts()
   slim(:"projects/new")
 end
@@ -136,6 +138,32 @@ post('/projects/new') do
   redirect('/projects')
 end
 
+get('/admin/craft_attribute/new') do
+  @craft_type = select_all_crafts()
+  slim(:"admin/new")
+end
+
+post('/admin/craft_type/new') do
+  name = params[:craft_name]
+  if new_craft_type(name) == nil
+    flash[:message] = "This craft type already exists!"
+    redirect('/admin/craft_attribute/new')
+  end
+  flash[:message] = "New craft type added!"
+  redirect('/admin/craft_attribute/new')
+end
+
+post('/admin/attribute/new') do
+  name = params[:attribute_name]
+  craft_type = params[:craft_type]
+  if new_attribute(name, craft_type) == nil
+    flash[:message] = "This attribute already exists!"
+    redirect('/admin/craft_attribute/new')
+  end
+  flash[:message] = "New attribute added!"
+  redirect('/admin/craft_attribute/new')
+end
+
 post('/projects/:id/delete') do
   id = params[:id].to_i
   delete_project(id)
@@ -145,6 +173,7 @@ end
 post('/admin/users/:id/delete') do
   id = params[:id].to_i
   delete_user(id)
+  flash[:message] = "User has been deleted!"
   redirect('/admin/users')
 end
 
@@ -171,6 +200,7 @@ post('/admin/users/:id/update') do
   id = params[:id].to_i
   admin_pin = params[:admin_pin]
   give_admin_status(id, admin_pin)
+  flash[:message] = "User's admin pin has been changed!"
   redirect('/admin/users')
 end
 
